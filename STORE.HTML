@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Food Review System</title>
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #ff6b6b;
+            --accent: #20c997;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --bg: #ffffff;
+            --card-bg: #f1f3f5;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --menu-bg: #fff9e6;
+            --danger: #dc3545;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #5c7cff;
+            --secondary: #ff8787;
+            --accent: #38d9a9;
+            --light: #343a40;
+            --dark: #f8f9fa;
+            --bg: #212529;
+            --card-bg: #2b3035;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --menu-bg: #332d1a;
+            --danger: #e83e8c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .developer-tag {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            flex: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--card-bg);
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--bg);
+            color: var(--dark);
+        }
+        
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+            margin: 0 5px;
+            transition: all 0.2s;
+        }
+        
+        .star.selected {
+            color: #ffc107;
+            transform: scale(1.1);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .reviews-list {
+            margin-top: 1.5rem;
+        }
+        
+        .review-item {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .review-rating {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .search-bar {
+            margin-bottom: 1.5rem;
+        }
+        
+        .meal-time {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: var(--accent);
+            color: white;
+            margin-left: 0.5rem;
+        }
+        
+        .emoji {
+            font-size: 1.2rem;
+            margin-right: 0.3rem;
+        }
+        
+        .weekly-menu {
+            background-color: var(--menu-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .menu-day {
+            margin-bottom: 1.5rem;
+        }
+        
+        .day-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .menu-item {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .menu-title {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .current-day {
+            background-color: rgba(74, 107, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .login-options a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .admin-controls {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .user-count {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+        
+        .current-meal-notice {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .welcome-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            display: none;
+        }
+        
+        .welcome-popup h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .welcome-popup p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .welcome-popup .btn {
+            margin: 0 auto;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                border-bottom: none;
+            }
+            
+            .tab {
+                border-bottom: 2px solid var(--card-bg);
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .weekly-menu {
+                padding: 1rem;
+            }
+            
+            .login-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .user-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="login-page">
+        <div class="login-container">
+            <h2 class="login-title">🏠 Hostel Food Review System</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <div class="login-options">
+                    <a href="#" id="register-link">Create new account</a>
+                    <a href="#" id="forgot-link">Forgot password?</a>
+                </div>
+            </form>
+            
+            <form id="register-form" style="display: none;">
+                <h3 class="login-title">Create New Account</h3>
+                <div class="form-group">
+                    <label for="new-username">Choose Username</label>
+                    <input type="text" id="new-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Choose Password</label>
+                    <input type="password" id="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="room-number">Room Number</label>
+                    <input type="text" id="room-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="roll-number">Roll Number</label>
+                    <input type="text" id="roll-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="pet-name">First Pet Name</label>
+                    <input type="text" id="pet-name" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <div class="login-options">
+                    <a href="#" id="back-to-login">Back to login</a>
+                </div>
+            </form>
+            
+            <form id="forgot-form" style="display: none;">
+                <h3 class="login-title">Reset Password</h3>
+                <div class="form-group">
+                    <label for="forgot-username">Username</label>
+                    <input type="text" id="forgot-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="forgot-dob">Date of Birth</label>
+                    <input type="date" id="forgot-dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="forgot-pet">First Pet Name</label>
+                    <input type="text" id="forgot-pet" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password-reset">New Password</label>
+                    <input type="password" id="new-password-reset" required>
+                </div>
+                <button type="submit" class="btn">Reset Password</button>
+                <div class="login-options">
+                    <a href="#" id="back-to-login-from-forgot">Back to login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="app-content" style="display: none;">
+        <header>
+            <h1>🏠 Hostel Food Review System</h1>
+            <p>Welcome, <span id="current-user"></span>! <a href="#" id="logout-link" style="color: white; text-decoration: underline;">Logout</a></p>
+        </header>
+        
+        <div class="developer-tag">Developed by Prem Golden (ECE)</div>
+        
+        <div class="container">
+            <div class="user-profile" id="user-profile">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="profile-name">User Name</div>
+                    <div class="user-meta">
+                        <span id="profile-room">Room: -</span> | 
+                        <span id="profile-roll">Roll: -</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="give-review">🍽️ Give Review</div>
+                <div class="tab" data-tab="view-stats">📊 View Statistics</div>
+                <div class="tab" data-tab="view-reviews">📝 View All Reviews</div>
+                <div class="tab" data-tab="weekly-menu">📅 Weekly Menu</div>
+                <div class="tab" data-tab="manage-users" id="manage-users-tab" style="display: none;">👑 Manage Users</div>
+                <div class="tab" data-tab="edit-menu" id="edit-menu-tab" style="display: none;">✏️ Edit Menu</div>
+            </div>
+            
+            <div id="give-review" class="tab-content active">
+                <div class="weekly-menu">
+                    <div class="menu-header">
+                        <h2>Today's Menu</h2>
+                    </div>
+                    <div id="todays-menu-container"></div>
+                </div>
+                
+                <div id="current-meal-notice" class="current-meal-notice">
+                    You can currently review: <span id="current-meal-period"></span>
+                </div>
+                
+                <div class="card">
+                    <h2>Submit Your Food Review</h2>
+                    <p>Help us improve our mess food quality by sharing your honest feedback</p>
+                    
+                    <form id="review-form">
+                        <div class="form-group">
+                            <label for="meal-time">Meal Time</label>
+                            <select id="meal-time" required disabled>
+                                <option value="">Select meal time</option>
+                                <option value="morning">🌅 Morning Breakfast</option>
+                                <option value="afternoon">☀️ Afternoon Lunch</option>
+                                <option value="evening">🌇 Evening Snacks</option>
+                                <option value="night">🌃 Night Dinner</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Food Rating</label>
+                            <div class="rating">
+                                <span class="star" data-value="1">☆</span>
+                                <span class="star" data-value="2">☆</span>
+                                <span class="star" data-value="3">☆</span>
+                                <span class="star" data-value="4">☆</span>
+                                <span class="star" data-value="5">☆</span>
+                            </div>
+                            <input type="hidden" id="rating" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="comments">Comments</label>
+                            <textarea id="comments" rows="4" placeholder="Share your detailed feedback about the food..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">Submit Review 🚀</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="view-stats" class="tab-content">
+                <div class="card">
+                    <h2>📊 Food Review Statistics</h2>
+                    <p>Overall ratings and feedback analysis</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Reviews</h3>
+                            <div class="stat-value" id="total-reviews">0</div>
+                            <p>Feedback submissions</p>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>Average Rating</h3>
+                            <div class="stat-value" id="avg-rating">0</div>
+                            <p>Out of 5 stars</p>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>Today's Reviews</h3>
+                            <div class="stat-value" id="today-reviews">0</div>
+                            <p>Submissions today</p>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>Top Meal</h3>
+                            <div class="stat-value" id="top-meal">-</div>
+                            <p>Highest rated meal time</p>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Recent Feedback Trends</h3>
+                    <div id="rating-trends" style="height: 300px; margin-top: 1rem; background-color: var(--card-bg); border-radius: 12px; padding: 1rem;">
+                        <p style="text-align: center; padding: 5rem 0;">Rating trends visualization will appear here</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="view-reviews" class="tab-content">
+                <div class="card">
+                    <h2>📝 All Student Reviews</h2>
+                    <p>Browse through all submitted feedback</p>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Search by name, room or roll number...">
+                    </div>
+                    
+                    <div class="reviews-list" id="reviews-container">
+                        <p style="text-align: center; padding: 2rem 0;">No reviews found. Submit your first review!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="weekly-menu" class="tab-content">
+                <div class="card">
+                    <h2>📅 Weekly Food Menu</h2>
+                    <p>This week's mess food schedule</p>
+                    
+                    <div class="weekly-menu">
+                        <div id="weekly-menu-container"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="manage-users" class="tab-content">
+                <div class="card">
+                    <h2>👑 User Management</h2>
+                    <p>Admin controls for managing users and reviews</p>
+                    
+                    <div class="admin-controls">
+                        <h3>Registered Users <span class="user-count" id="user-count">0</span></h3>
+                        <div id="users-list"></div>
+                        
+                        <h3 style="margin-top: 2rem;">Delete Reviews</h3>
+                        <div class="search-bar">
+                            <input type="text" id="admin-search" placeholder="Search reviews to delete...">
+                            <button id="delete-old-reviews" class="btn-danger" style="margin-top: 0.5rem;">Delete Reviews Older Than 30 Days</button>
+                        </div>
+                        <div id="admin-reviews-container" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="edit-menu" class="tab-content">
+                <div class="card">
+                    <h2>✏️ Edit Weekly Menu</h2>
+                    <p>Update the weekly food menu</p>
+                    
+                    <form id="menu-form">
+                        <div class="form-group">
+                            <label for="edit-day">Select Day</label>
+                            <select id="edit-day" class="form-control">
+                                <option value="monday">Monday</option>
+                                <option value="tuesday">Tuesday</option>
+                                <option value="wednesday">Wednesday</option>
+                                <option value="thursday">Thursday</option>
+                                <option value="friday">Friday</option>
+                                <option value="saturday">Saturday</option>
+                                <option value="sunday">Sunday</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="breakfast-menu">Breakfast Menu</label>
+                            <textarea id="breakfast-menu" rows="2" class="form-control" placeholder="Enter breakfast menu"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lunch-menu">Lunch Menu</label>
+                            <textarea id="lunch-menu" rows="2" class="form-control" placeholder="Enter lunch menu"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="snacks-menu">Snacks Menu</label>
+                            <textarea id="snacks-menu" rows="2" class="form-control" placeholder="Enter snacks menu"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dinner-menu">Dinner Menu</label>
+                            <textarea id="dinner-menu" rows="2" class="form-control" placeholder="Enter dinner menu"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">Update Menu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    <div class="welcome-popup" id="welcome-popup">
+        <h2 id="welcome-title">Welcome!</h2>
+        <p id="welcome-message">Thank you for using our Hostel Food Review System.</p>
+        <button class="btn" id="close-welcome">Continue</button>
+    </div>
+    
+    <script>
+        const weeklyMenu = {
+            monday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> 2 Boiled Egg/2 Banana + Channa</div>
+                     <div class="menu-item"><span class="menu-title">Lunch:</span> Roti + Rice + Dal + Kofta</div>
+                     <div class="menu-item"><span class="menu-title">Snacks:</span> Milkbiscuit + Tea</div>
+                     <div class="menu-item"><span class="menu-title">Dinner:</span> Methi Paratha + Sewai</div>`,
+            tuesday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Litti + Aloo Sabji</div>
+                      <div class="menu-item"><span class="menu-title">Lunch:</span> Rajma/Chola + Aaloo</div>
+                      <div class="menu-item"><span class="menu-title">Snacks:</span> Samosa + Tea</div>
+                      <div class="menu-item"><span class="menu-title">Dinner:</span> Aloo Parwal + Gulabjamun</div>`,
+            wednesday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Puri + Jalebi</div>
+                        <div class="menu-item"><span class="menu-title">Lunch:</span> Seasonal Veg + Potato</div>
+                        <div class="menu-item"><span class="menu-title">Snacks:</span> Bread Pakoda</div>
+                        <div class="menu-item"><span class="menu-title">Dinner:</span> Chicken/Paneer + Raita</div>`,
+            thursday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Aaloo Paratha</div>
+                       <div class="menu-item"><span class="menu-title">Lunch:</span> Curry Pakoda</div>
+                       <div class="menu-item"><span class="menu-title">Snacks:</span> Litti + Tea</div>
+                       <div class="menu-item"><span class="menu-title">Dinner:</span> Puri + Kheer</div>`,
+            friday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Roti + Chana</div>
+                     <div class="menu-item"><span class="menu-title">Lunch:</span> Soyabean Sabji</div>
+                     <div class="menu-item"><span class="menu-title">Snacks:</span> Pasta</div>
+                     <div class="menu-item"><span class="menu-title">Dinner:</span> Egg/Matar Mashroom</div>`,
+            saturday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Chole Bhature</div>
+                        <div class="menu-item"><span class="menu-title">Lunch:</span> Khichdi + Chokha</div>
+                        <div class="menu-item"><span class="menu-title">Snacks:</span> Noodles</div>
+                        <div class="menu-item"><span class="menu-title">Dinner:</span> Dal Tadka + Buniya</div>`,
+            sunday: `<div class="menu-item"><span class="menu-title">Breakfast:</span> Dosa + Sambhar</div>
+                     <div class="menu-item"><span class="menu-title">Lunch:</span> Jeera Rice + Dal</div>
+                     <div class="menu-item"><span class="menu-title">Snacks:</span> Poha</div>
+                     <div class="menu-item"><span class="menu-title">Dinner:</span> Biryani + Raita</div>`
+        };
+        
+        const ADMIN_CREDENTIALS = {
+            username: 'premgolden',
+            password: '180209'
+        };
+        
+        const MEAL_SCHEDULE = {
+            morning: { start: 7, end: 10 },
+            afternoon: { start: 12, end: 15 },
+            evening: { start: 16, end: 18 },
+            night: { start: 19, end: 22 }
+        };
+        
+        const SEASONAL_WELCOME_MESSAGES = {
+            winter: ["Stay warm with our hot meals!", "Winter special meals available!"],
+            spring: ["Fresh seasonal dishes served!", "Enjoy our spring special menu!"],
+            summer: ["Cooling drinks and light meals!", "Beat the heat with our summer menu!"],
+            autumn: ["Comfort food for the season!", "Autumn harvest specials available!"]
+        };
+        
+        let reviews = JSON.parse(localStorage.getItem('foodReviews')) || [];
+        let users = JSON.parse(localStorage.getItem('foodReviewUsers')) || [];
+        let currentUser = null;
+        let currentMenu = JSON.parse(localStorage.getItem('weeklyMenu')) || weeklyMenu;
+        
+        const loginPage = document.getElementById('login-page');
+        const appContent = document.getElementById('app-content');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const forgotForm = document.getElementById('forgot-form');
+        const registerLink = document.getElementById('register-link');
+        const backToLogin = document.getElementById('back-to-login');
+        const forgotLink = document.getElementById('forgot-link');
+        const backToLoginFromForgot = document.getElementById('back-to-login-from-forgot');
+        const logoutLink = document.getElementById('logout-link');
+        const currentUserSpan = document.getElementById('current-user');
+        const manageUsersTab = document.getElementById('manage-users-tab');
+        const editMenuTab = document.getElementById('edit-menu-tab');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        const reviewForm = document.getElementById('review-form');
+        const reviewsContainer = document.getElementById('reviews-container');
+        const searchInput = document.getElementById('search-input');
+        const todaysMenuContainer = document.getElementById('todays-menu-container');
+        const weeklyMenuContainer = document.getElementById('weekly-menu-container');
+        const currentMealNotice = document.getElementById('current-meal-notice');
+        const currentMealPeriod = document.getElementById('current-meal-period');
+        const mealTimeSelect = document.getElementById('meal-time');
+        const usersList = document.getElementById('users-list');
+        const userCount = document.getElementById('user-count');
+        const adminSearch = document.getElementById('admin-search');
+        const adminReviewsContainer = document.getElementById('admin-reviews-container');
+        const deleteOldReviewsBtn = document.getElementById('delete-old-reviews');
+        const userProfile = document.getElementById('user-profile');
+        const userAvatar = document.getElementById('user-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileRoom = document.getElementById('profile-room');
+        const profileRoll = document.getElementById('profile-roll');
+        const welcomePopup = document.getElementById('welcome-popup');
+        const overlay = document.getElementById('overlay');
+        const closeWelcome = document.getElementById('close-welcome');
+        const welcomeTitle = document.getElementById('welcome-title');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const menuForm = document.getElementById('menu-form');
+        const editDay = document.getElementById('edit-day');
+        const breakfastMenu = document.getElementById('breakfast-menu');
+        const lunchMenu = document.getElementById('lunch-menu');
+        const snacksMenu = document.getElementById('snacks-menu');
+        const dinnerMenu = document.getElementById('dinner-menu');
+        
+        function getCurrentSeason() {
+            const month = new Date().getMonth();
+            if (month >= 2 && month <= 4) return 'spring';
+            if (month >= 5 && month <= 7) return 'summer';
+            if (month >= 8 && month <= 10) return 'autumn';
+            return 'winter';
+        }
+        
+        function showWelcomeMessage() {
+            const season = getCurrentSeason();
+            const messages = SEASONAL_WELCOME_MESSAGES[season];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            welcomeTitle.textContent = `Welcome ${currentUser.name}!`;
+            welcomeMessage.textContent = randomMessage;
+            welcomePopup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+        
+        function getCurrentMealTime() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            
+            for (const [meal, time] of Object.entries(MEAL_SCHEDULE)) {
+                if (currentHour >= time.start && currentHour < time.end) {
+                    return meal;
+                }
+            }
+            
+            return null;
+        }
+        
+        function updateMealTimeSelection() {
+            const currentMeal = getCurrentMealTime();
+            
+            if (currentMeal) {
+                const mealTimeText = {
+                    morning: '🌅 Morning Breakfast',
+                    afternoon: '☀️ Afternoon Lunch',
+                    evening: '🌇 Evening Snacks',
+                    night: '🌃 Night Dinner'
+                };
+                
+                currentMealNotice.style.display = 'block';
+                currentMealPeriod.textContent = mealTimeText[currentMeal];
+                mealTimeSelect.innerHTML = `<option value="${currentMeal}">${mealTimeText[currentMeal]}</option>`;
+            } else {
+                currentMealNotice.style.display = 'none';
+                mealTimeSelect.disabled = false;
+                mealTimeSelect.innerHTML = `
+                    <option value="">Select meal time</option>
+                    <option value="morning">🌅 Morning Breakfast</option>
+                    <option value="afternoon">☀️ Afternoon Lunch</option>
+                    <option value="evening">🌇 Evening Snacks</option>
+                    <option value="night">🌃 Night Dinner</option>
+                `;
+            }
+        }
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                
+                if (tab.dataset.tab === 'view-stats') {
+                    updateStats();
+                } else if (tab.dataset.tab === 'view-reviews') {
+                    displayReviews();
+                } else if (tab.dataset.tab === 'weekly-menu') {
+                    displayWeeklyMenu();
+                } else if (tab.dataset.tab === 'manage-users') {
+                    displayUsers();
+                    displayReviewsForAdmin();
+                } else if (tab.dataset.tab === 'edit-menu') {
+                    loadMenuForEditing();
+                }
+            });
+        });
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = parseInt(star.dataset.value);
+                ratingInput.value = value;
+                
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.textContent = '★';
+                        s.classList.add('selected');
+                    } else {
+                        s.textContent = '☆';
+                        s.classList.remove('selected');
+                    }
+                });
+            });
+        });
+        
+        reviewForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const mealTime = document.getElementById('meal-time').value;
+            const rating = ratingInput.value;
+            const comments = document.getElementById('comments').value;
+            
+            if (!rating) {
+                alert('Please rate the food by clicking on the stars');
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            const existingReview = reviews.find(review => 
+                review.userId === currentUser.username && 
+                review.mealTime === mealTime && 
+                review.date.split('T')[0] === today
+            );
+            
+            if (existingReview) {
+                alert('You have already submitted feedback for this meal today. Thank you!');
+                return;
+            }
+            
+            const ip = simulateIPAddress();
+            
+            const newReview = {
+                id: Date.now(),
+                name: currentUser.name,
+                room: currentUser.room,
+                roll: currentUser.roll,
+                mealTime,
+                rating: parseInt(rating),
+                comments,
+                date: new Date().toISOString(),
+                ipAddress: ip,
+                userId: currentUser.username
+            };
+            
+            reviews.unshift(newReview);
+            localStorage.setItem('foodReviews', JSON.stringify(reviews));
+            
+            cleanupOldReviews();
+            
+            reviewForm.reset();
+            stars.forEach(star => {
+                star.textContent = '☆';
+                star.classList.remove('selected');
+            });
+            ratingInput.value = '';
+            
+            alert('Thank you for your feedback! Your review has been submitted successfully.');
+            
+            if (document.querySelector('.tab.active').dataset.tab === 'view-stats') {
+                updateStats();
+            }
+        });
+        
+        function displayReviews(filter = '') {
+            if (reviews.length === 0) {
+                reviewsContainer.innerHTML = '<p style="text-align: center; padding: 2rem 0;">No reviews found. Submit your first review!</p>';
+                return;
+            }
+            
+            let filteredReviews = reviews;
+            if (filter) {
+                const searchTerm = filter.toLowerCase();
+                filteredReviews = reviews.filter(review => 
+                    review.name.toLowerCase().includes(searchTerm) ||
+                    review.room.toLowerCase().includes(searchTerm) ||
+                    review.roll.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredReviews.length === 0) {
+                reviewsContainer.innerHTML = '<p style="text-align: center; padding: 2rem 0;">No matching reviews found.</p>';
+                return;
+            }
+            
+            reviewsContainer.innerHTML = '';
+            
+            filteredReviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                
+                const mealTimeEmoji = {
+                    morning: '🌅',
+                    afternoon: '☀️',
+                    evening: '🌇',
+                    night: '🌃'
+                };
+                
+                const mealTimeText = {
+                    morning: 'Morning Breakfast',
+                    afternoon: 'Afternoon Lunch',
+                    evening: 'Evening Snacks',
+                    night: 'Night Dinner'
+                };
+                
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <h3>${review.name} (Room: ${review.room}, Roll: ${review.roll})</h3>
+                        <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                    </div>
+                    <div class="review-meta">
+                        ${new Date(review.date).toLocaleString()} 
+                        <span class="meal-time">${mealTimeEmoji[review.mealTime]} ${mealTimeText[review.mealTime]}</span>
+                    </div>
+                    <p style="margin-top: 0.5rem;">${review.comments || 'No additional comments'}</p>
+                `;
+                
+                reviewsContainer.appendChild(reviewItem);
+            });
+        }
+        
+        function displayReviewsForAdmin(filter = '') {
+            let filteredReviews = reviews;
+            if (filter) {
+                const searchTerm = filter.toLowerCase();
+                filteredReviews = reviews.filter(review => 
+                    review.name.toLowerCase().includes(searchTerm) ||
+                    review.room.toLowerCase().includes(searchTerm) ||
+                    review.roll.toLowerCase().includes(searchTerm) ||
+                    review.userId.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredReviews.length === 0) {
+                adminReviewsContainer.innerHTML = '<p style="text-align: center; padding: 2rem 0;">No matching reviews found.</p>';
+                return;
+            }
+            
+            adminReviewsContainer.innerHTML = '';
+            
+            filteredReviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                
+                const mealTimeEmoji = {
+                    morning: '🌅',
+                    afternoon: '☀️',
+                    evening: '🌇',
+                    night: '🌃'
+                };
+                
+                const mealTimeText = {
+                    morning: 'Morning Breakfast',
+                    afternoon: 'Afternoon Lunch',
+                    evening: 'Evening Snacks',
+                    night: 'Night Dinner'
+                };
+                
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <h3>${review.name} (Room: ${review.room}, Roll: ${review.roll})</h3>
+                        <div>
+                            <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                            <button class="delete-btn" data-id="${review.id}">Delete</button>
+                        </div>
+                    </div>
+                    <div class="review-meta">
+                        ${new Date(review.date).toLocaleString()} 
+                        <span class="meal-time">${mealTimeEmoji[review.mealTime]} ${mealTimeText[review.mealTime]}</span>
+                        <span style="margin-left: 0.5rem;">User: ${review.userId}</span>
+                    </div>
+                    <p style="margin-top: 0.5rem;">${review.comments || 'No additional comments'}</p>
+                `;
+                
+                adminReviewsContainer.appendChild(reviewItem);
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const reviewId = parseInt(e.target.dataset.id);
+                    deleteReview(reviewId);
+                });
+            });
+        }
+        
+        function deleteReview(id) {
+            if (confirm('Are you sure you want to delete this review?')) {
+                reviews = reviews.filter(review => review.id !== id);
+                localStorage.setItem('foodReviews', JSON.stringify(reviews));
+                displayReviewsForAdmin(adminSearch.value);
+                updateStats();
+            }
+        }
+        
+        function displayUsers() {
+            usersList.innerHTML = '';
+            userCount.textContent = users.length;
+            
+            if (users.length === 0) {
+                usersList.innerHTML = '<p>No users found</p>';
+                return;
+            }
+            
+            const usersListHTML = users.map(user => {
+                const userReviews = reviews.filter(r => r.userId === user.username).length;
+                return `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <h3>${user.username}</h3>
+                            <div>
+                                <span>Reviews: ${userReviews}</span>
+                                <button class="delete-btn" data-username="${user.username}" style="margin-left: 1rem;">Delete</button>
+                            </div>
+                        </div>
+                        <div class="review-meta">
+                            Registered: ${new Date(user.registeredDate).toLocaleDateString()}
+                            <div>Name: ${user.name || '-'}, Room: ${user.room || '-'}, Roll: ${user.roll || '-'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            usersList.innerHTML = usersListHTML;
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const username = e.target.dataset.username;
+                    if (username === ADMIN_CREDENTIALS.username) {
+                        alert('Cannot delete admin user');
+                        return;
+                    }
+                    if (confirm(`Are you sure you want to delete user ${username}?`)) {
+                        users = users.filter(u => u.username !== username);
+                        reviews = reviews.filter(r => r.userId !== username);
+                        localStorage.setItem('foodReviewUsers', JSON.stringify(users));
+                        localStorage.setItem('foodReviews', JSON.stringify(reviews));
+                        displayUsers();
+                        displayReviewsForAdmin(adminSearch.value);
+                        updateStats();
+                    }
+                });
+            });
+        }
+        
+        function updateStats() {
+            if (reviews.length === 0) return;
+            
+            document.getElementById('total-reviews').textContent = reviews.length;
+            
+            const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+            const avgRating = (totalRating / reviews.length).toFixed(1);
+            document.getElementById('avg-rating').textContent = avgRating;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayReviews = reviews.filter(review => review.date.split('T')[0] === today).length;
+            document.getElementById('today-reviews').textContent = todayReviews;
+            
+            const mealTimes = {
+                morning: 0,
+                afternoon: 0,
+                evening: 0,
+                night: 0
+            };
+            
+            reviews.forEach(review => {
+                mealTimes[review.mealTime]++;
+            });
+            
+            let topMeal = '';
+            let maxCount = 0;
+            
+            for (const [meal, count] of Object.entries(mealTimes)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    topMeal = meal;
+                }
+            }
+            
+            const mealTimeText = {
+                morning: '🌅 Morning',
+                afternoon: '☀️ Afternoon',
+                evening: '🌇 Evening',
+                night: '🌃 Night'
+            };
+            
+            document.getElementById('top-meal').textContent = mealTimeText[topMeal];
+        }
+        
+        function cleanupOldReviews() {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            reviews = reviews.filter(review => {
+                return new Date(review.date) > thirtyDaysAgo;
+            });
+            
+            localStorage.setItem('foodReviews', JSON.stringify(reviews));
+        }
+        
+        deleteOldReviewsBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all reviews older than 30 days?')) {
+                cleanupOldReviews();
+                displayReviewsForAdmin(adminSearch.value);
+                updateStats();
+                alert('Old reviews have been deleted successfully.');
+            }
+        });
+        
+        function simulateIPAddress() {
+            return `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+        }
+        
+        searchInput.addEventListener('input', (e) => {
+            displayReviews(e.target.value);
+        });
+        
+        adminSearch.addEventListener('input', (e) => {
+            displayReviewsForAdmin(e.target.value);
+        });
+        
+        function displayTodaysMenu() {
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const today = new Date().getDay();
+            const todayDay = days[today];
+            
+            let menuHTML = `<div class="menu-day current-day">
+                <div class="day-title">${capitalizeFirstLetter(todayDay)}'s Menu</div>
+                ${currentMenu[todayDay]}
+            </div>`;
+            
+            todaysMenuContainer.innerHTML = menuHTML;
+        }
+        
+        function displayWeeklyMenu() {
+            let menuHTML = '';
+            
+            for (const [day, menu] of Object.entries(currentMenu)) {
+                const isCurrentDay = new Date().getDay() === ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].indexOf(day);
+                
+                menuHTML += `<div class="menu-day ${isCurrentDay ? 'current-day' : ''}">
+                    <div class="day-title">${capitalizeFirstLetter(day)}</div>
+                    ${menu}
+                </div>`;
+            }
+            
+            weeklyMenuContainer.innerHTML = menuHTML;
+        }
+        
+        function loadMenuForEditing() {
+            const day = editDay.value;
+            const menuText = currentMenu[day];
+            
+            const breakfastMatch = menuText.match(/Breakfast:<\/span>([^<]+)/);
+            const lunchMatch = menuText.match(/Lunch:<\/span>([^<]+)/);
+            const snacksMatch = menuText.match(/Snacks:<\/span>([^<]+)/);
+            const dinnerMatch = menuText.match(/Dinner:<\/span>([^<]+)/);
+            
+            breakfastMenu.value = breakfastMatch ? breakfastMatch[1].trim() : '';
+            lunchMenu.value = lunchMatch ? lunchMatch[1].trim() : '';
+            snacksMenu.value = snacksMatch ? snacksMatch[1].trim() : '';
+            dinnerMenu.value = dinnerMatch ? dinnerMatch[1].trim() : '';
+        }
+        
+        function updateMenuForDay(day, breakfast, lunch, snacks, dinner) {
+            currentMenu[day] = `<div class="menu-item"><span class="menu-title">Breakfast:</span> ${breakfast}</div>
+                <div class="menu-item"><span class="menu-title">Lunch:</span> ${lunch}</div>
+                <div class="menu-item"><span class="menu-title">Snacks:</span> ${snacks}</div>
+                <div class="menu-item"><span class="menu-title">Dinner:</span> ${dinner}</div>`;
+            
+            localStorage.setItem('weeklyMenu', JSON.stringify(currentMenu));
+            displayTodaysMenu();
+            displayWeeklyMenu();
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        function updateUserProfile(user) {
+            profileName.textContent = user.name || user.username;
+            profileRoom.textContent = `Room: ${user.room || '-'}`;
+            profileRoll.textContent = `Roll: ${user.roll || '-'}`;
+            userAvatar.textContent = user.name ? user.name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase();
+        }
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                currentUser = {
+                    username: ADMIN_CREDENTIALS.username,
+                    isAdmin: true,
+                    name: "Admin",
+                    room: "Admin",
+                    roll: "Admin"
+                };
+                showApp();
+                return;
+            }
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = {
+                    username: user.username,
+                    isAdmin: false,
+                    name: user.name,
+                    room: user.room,
+                    roll: user.roll
+                };
+                showApp();
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+        
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const name = document.getElementById('full-name').value;
+            const room = document.getElementById('room-number').value;
+            const roll = document.getElementById('roll-number').value;
+            const dob = document.getElementById('dob').value;
+            const petName = document.getElementById('pet-name').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (username === ADMIN_CREDENTIALS.username) {
+                alert('This username is reserved');
+                return;
+            }
+            
+            const userExists = users.some(u => u.username === username);
+            
+            if (userExists) {
+                alert('Username already exists');
+                return;
+            }
+            
+            users.push({
+                username,
+                password,
+                name,
+                room,
+                roll,
+                dob,
+                petName,
+                registeredDate: new Date().toISOString()
+            });
+            
+            localStorage.setItem('foodReviewUsers', JSON.stringify(users));
+            
+            alert('Registration successful! Please login with your new credentials.');
+            registerForm.reset();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            forgotForm.style.display = 'block';
+        });
+        
+        backToLoginFromForgot.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        forgotForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('forgot-username').value;
+            const dob = document.getElementById('forgot-dob').value;
+            const petName = document.getElementById('forgot-pet').value;
+            const newPassword = document.getElementById('new-password-reset').value;
+            
+            const user = users.find(u => 
+                u.username === username && 
+                u.dob === dob && 
+                u.petName.toLowerCase() === petName.toLowerCase()
+            );
+            
+            if (user) {
+                user.password = newPassword;
+                localStorage.setItem('foodReviewUsers', JSON.stringify(users));
+                alert('Password reset successfully! Please login with your new password.');
+                forgotForm.reset();
+                forgotForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            } else {
+                alert('Verification failed. Please check your details and try again.');
+            }
+        });
+        
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+        
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentUser = null;
+            loginPage.style.display = 'block';
+            appContent.style.display = 'none';
+            loginForm.reset();
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            forgotForm.style.display = 'none';
+        });
+        
+        closeWelcome.addEventListener('click', () => {
+            welcomePopup.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+        
+        editDay.addEventListener('change', loadMenuForEditing);
+        
+        menuForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const day = editDay.value;
+            const breakfast = breakfastMenu.value;
+            const lunch = lunchMenu.value;
+            const snacks = snacksMenu.value;
+            const dinner = dinnerMenu.value;
+            
+            updateMenuForDay(day, breakfast, lunch, snacks, dinner);
+            alert('Menu updated successfully!');
+        });
+        
+        function showApp() {
+            loginPage.style.display = 'none';
+            appContent.style.display = 'block';
+            currentUserSpan.textContent = currentUser.username;
+            updateUserProfile(currentUser);
+            
+            if (currentUser.isAdmin) {
+                manageUsersTab.style.display = 'block';
+                editMenuTab.style.display = 'block';
+            } else {
+                manageUsersTab.style.display = 'none';
+                editMenuTab.style.display = 'none';
+            }
+            
+            cleanupOldReviews();
+            displayReviews();
+            updateStats();
+            displayTodaysMenu();
+            displayWeeklyMenu();
+            updateMealTimeSelection();
+            
+            showWelcomeMessage();
+            
+            setInterval(updateMealTimeSelection, 60000);
+        }
+        
+        if (users.length === 0) {
+            users.push({
+                username: ADMIN_CREDENTIALS.username,
+                password: ADMIN_CREDENTIALS.password,
+                name: "Admin",
+                room: "Admin",
+                roll: "Admin",
+                registeredDate: new Date().toISOString(),
+                isAdmin: true
+            });
+            localStorage.setItem('foodReviewUsers', JSON.stringify(users));
+        }
+        
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('currentUser')) {
+                const savedUser = JSON.parse(localStorage.getItem('currentUser'));
+                const user = users.find(u => u.username === savedUser.username);
+                
+                if (user) {
+                    currentUser = {
+                        username: user.username,
+                        isAdmin: user.isAdmin || false,
+                        name: user.name,
+                        room: user.room,
+                        roll: user.roll
+                    };
+                    showApp();
+                }
+            }
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (currentUser) {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    username: currentUser.username
+                }));
+            }
+        });
+    </script>
+</body>
+</html>
